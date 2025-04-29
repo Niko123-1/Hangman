@@ -11,6 +11,7 @@ class HangmanGame:
         self.hangman_images = []
         self.current_hangman_stage = 0
         self.difficulty = None
+        self.category = ""
         self.secret_word = ""
         self.guessed_letters = set()
         self.letter_buttons = {}  # Словарь для хранения кнопок букв
@@ -44,17 +45,16 @@ class HangmanGame:
         self.image_label.pack_forget()
         self.current_hangman_stage = 0
 
-        label = Label(self.root, text="Выберите уровень сложности:", font=("Arial", 14))
+        label = Label(self.root, text="Выберите категорию:", font=("Arial", 14))
         label.pack(pady=10)
 
-        Button(self.root, text="Лёгкий", command=lambda: self.start_game(1)).pack(pady=20)
-        Button(self.root, text="Средний", command=lambda: self.start_game(2)).pack(pady=20)
-        Button(self.root, text="Сложный", command=lambda: self.start_game(3)).pack(pady=20)
+        Button(self.root, text="Животные", command=lambda: self.start_game('Animals')).pack(pady=20)
+        Button(self.root, text="Еда", command=lambda: self.start_game('Food')).pack(pady=20)
 
-    def start_game(self, difficulty):
+    def start_game(self, category):
         """Начинает игру с выбранной сложностью."""
-        self.difficulty = difficulty
-        self.secret_word = self.get_random_word(difficulty).upper()
+        self.category = category
+        self.secret_word = self.get_random_word(category).upper()
         self.guessed_letters = set()
         self.current_hangman_stage = 0
         self.letter_buttons = {}
@@ -73,6 +73,9 @@ class HangmanGame:
 
     def reveal_hints(self):
         """Открывает подсказки в зависимости от сложности."""
+
+        difficulty = self.define_difficulty()
+
         if self.difficulty == 2 or self.difficulty == 1:
             # Открываем 1 случайную букву
             closed_positions = [i for i, char in enumerate(self.secret_word) if char not in self.guessed_letters]
@@ -87,6 +90,16 @@ class HangmanGame:
                     self.guessed_letters.add(char)
             elif unique_chars:
                 self.guessed_letters.add(unique_chars[0])
+
+    def define_difficulty(self):
+        difficulty = 0
+        if len(self.secret_word)<=4:
+            difficulty = 1
+        elif 5 <= len(self.secret_word) <= 7:
+            difficulty = 2
+        elif len(self.secret_word) > 7:
+            difficulty = 3
+        return difficulty
 
     def show_word_display(self):
         """Показывает загаданное слово."""
@@ -190,20 +203,16 @@ class HangmanGame:
             if widget != self.image_label:  # Не удаляем label с изображением
                 widget.destroy()
 
-    def get_random_word(self, difficulty):
+    def get_random_word(self, category):
         """Выбирает случайное слово в зависимости от сложности."""
         try:
-            with open('Words.txt', 'r', encoding='utf-8') as f:
-                words = [line.strip().upper() for line in f if line.strip()]
+            if category == 'Animals':
+                with open('Animals.txt', 'r', encoding='utf-8') as f:
+                    words = [line.strip().upper() for line in f if line.strip()]
+            elif category == 'Food':
+                with open('Food.txt', 'r', encoding='utf-8') as f:
+                    words = [line.strip().upper() for line in f if line.strip()]
         except FileNotFoundError:
             messagebox.showerror("Ошибка", "Файл Words.txt не найден!")
             return None
-
-        if difficulty == 1:
-            filtered_words = [word for word in words if len(word) <= 4]
-        elif difficulty == 2:
-            filtered_words = [word for word in words if 5 <= len(word) <= 7]
-        elif difficulty == 3:
-            filtered_words = [word for word in words if len(word) > 7]
-
-        return random.choice(filtered_words) if filtered_words else None
+        return random.choice(words) if words else None
