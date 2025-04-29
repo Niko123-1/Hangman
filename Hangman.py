@@ -47,9 +47,9 @@ class HangmanGame:
         label = Label(self.root, text="Выберите уровень сложности:", font=("Arial", 14))
         label.pack(pady=10)
 
-        Button(self.root, text="Лёгкий (1)", command=lambda: self.start_game(1)).pack(pady=20)
-        Button(self.root, text="Средний (2)", command=lambda: self.start_game(2)).pack(pady=20)
-        Button(self.root, text="Сложный (3)", command=lambda: self.start_game(3)).pack(pady=20)
+        Button(self.root, text="Лёгкий", command=lambda: self.start_game(1)).pack(pady=20)
+        Button(self.root, text="Средний", command=lambda: self.start_game(2)).pack(pady=20)
+        Button(self.root, text="Сложный", command=lambda: self.start_game(3)).pack(pady=20)
 
     def start_game(self, difficulty):
         """Начинает игру с выбранной сложностью."""
