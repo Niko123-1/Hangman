@@ -22,8 +22,8 @@ class HangmanGame:
         # Создаем Label для картинки (но пока не отображаем)
         self.image_label = Label(self.root)
 
-        # Начинаем с выбора сложности
-        self.setup_difficulty_ui()
+        # Начинаем с выбора категории
+        self.setup_category_ui()
 
     def load_hangman_images(self):
         """Загружает все изображения виселицы"""
@@ -36,8 +36,8 @@ class HangmanGame:
             messagebox.showerror("Ошибка", "Не найдены файлы с изображениями виселицы!")
             self.root.destroy()
 
-    def setup_difficulty_ui(self):
-        """Создаёт интерфейс выбора сложности."""
+    def setup_category_ui(self):
+        """Создаёт интерфейс выбора категории."""
         self.clear_window()
 
         # Сбрасываем и прячем изображение
@@ -52,7 +52,7 @@ class HangmanGame:
         Button(self.root, text="Еда", command=lambda: self.start_game('Food')).pack(pady=20)
 
     def start_game(self, category):
-        """Начинает игру с выбранной сложностью."""
+        """Начинает игру с выбранной категорией."""
         self.category = category
         self.secret_word = self.get_random_word(category).upper()
         self.guessed_letters = set()
@@ -76,13 +76,13 @@ class HangmanGame:
 
         difficulty = self.define_difficulty()
 
-        if self.difficulty == 2 or self.difficulty == 1:
+        if difficulty == 2 or difficulty == 1:
             # Открываем 1 случайную букву
             closed_positions = [i for i, char in enumerate(self.secret_word) if char not in self.guessed_letters]
             if closed_positions:
                 pos = random.choice(closed_positions)
                 self.guessed_letters.add(self.secret_word[pos])
-        elif self.difficulty == 3:
+        elif difficulty == 3:
             # Открываем 2 разные буквы
             unique_chars = list(set(self.secret_word) - self.guessed_letters)
             if len(unique_chars) >= 2:
@@ -114,7 +114,7 @@ class HangmanGame:
         Label(self.root, text=f"Слово из {len(self.secret_word)} букв", font=("Arial", 12)).pack()
 
         # Кнопка для начала заново
-        Button(self.root, text="Начать заново", command=self.setup_difficulty_ui).pack(side="bottom", pady=10)
+        Button(self.root, text="Начать заново", command=self.setup_category_ui).pack(side="bottom", pady=10)
 
         # Создаем клавиатуру
         self.create_keyboard()
@@ -172,7 +172,7 @@ class HangmanGame:
             # Проверяем, угадано ли всё слово
             if all(char in self.guessed_letters for char in self.secret_word):
                 messagebox.showinfo("Победа!", f"Вы выиграли! Слово: {self.secret_word}")
-                self.setup_difficulty_ui()
+                self.setup_category_ui()
             else:
                 self.show_word_display()
         else:
